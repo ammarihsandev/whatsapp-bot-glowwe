@@ -22,15 +22,16 @@ async function startSock () {
   sock.ev.on('creds.update', saveCreds);
 
   // 4️⃣ auto‑reconnect unless the session is explicitly logged out
-  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
-    if (connection === 'close') {
-      const code = (lastDisconnect?.error as Boom)?.output?.statusCode;
-      if (code !== DisconnectReason.loggedOut) startSock();
-      else console.log('❌ Logged out. Delete auth folder to pair again.');
-    } else if (connection === 'open') {
-      console.log('✅ WhatsApp Web socket is up');
-    }
-  });
+sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
+  if (connection === 'close') {
+    const code = lastDisconnect?.error?.output?.statusCode;
+    if (code !== DisconnectReason.loggedOut) startSock();
+    else console.log('❌ Logged out. Delete auth folder to pair again.');
+  } else if (connection === 'open') {
+    console.log('✅ WhatsApp Web socket is up');
+  }
+});
+
 
   // 5️⃣ simple echo demo – reply “pong” to “ping”
   sock.ev.on('messages.upsert', ({ messages }) => {
