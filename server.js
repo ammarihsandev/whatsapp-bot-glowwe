@@ -1,8 +1,8 @@
-import pkg from '@whiskeysockets/baileys';
+import baileys from '@whiskeysockets/baileys';
 import express from 'express';
 import qrcode from 'qrcode-terminal';
 
-const { makeWASocket, useSingleFileAuthState } = pkg;
+const { makeWASocket, useMultiFileAuthState } = baileys;
 
 const app = express();
 app.use(express.json());
@@ -10,10 +10,10 @@ app.use(express.json());
 const SECRET = process.env.SECRET || 'glowwe-secret';
 const PORT = process.env.PORT;
 
-// WhatsApp session with persistent auth
-const { state, saveState } = await useSingleFileAuthState('./auth.json');
+// WhatsApp session with persistent multi-file auth
+const { state, saveCreds } = await useMultiFileAuthState('./auth');
 const sock = makeWASocket({ auth: state });
-sock.ev.on('creds.update', saveState);
+sock.ev.on('creds.update', saveCreds);
 
 // Show QR in Render logs
 sock.ev.on('connection.update', ({ qr }) => {
