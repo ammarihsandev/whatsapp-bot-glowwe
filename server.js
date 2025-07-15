@@ -4,7 +4,6 @@ import qrcode from 'qrcode-terminal';
 
 const { makeWASocket, useSingleFileAuthState } = pkg;
 
-
 const app = express();
 app.use(express.json());
 
