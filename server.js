@@ -1,3 +1,5 @@
+if (!globalThis.crypto) globalThis.crypto = require('crypto').webcrypto;
+
 import * as baileys from '@whiskeysockets/baileys';
 const { makeWASocket, useMultiFileAuthState } = baileys;
 
