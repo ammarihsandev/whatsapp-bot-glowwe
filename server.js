@@ -8,7 +8,7 @@ const { Boom } = require('@hapi/boom');
 const qrcode = require('qrcode-terminal');
 
 async function startSock() {
-  const { state, saveCreds } = await useMultiFileAuthState('./auth');
+const { state, saveCreds } = await useMultiFileAuthState('/opt/render/project/src/auth');
   const { version } = await fetchLatestBaileysVersion();
 
   const sock = makeWASocket({
