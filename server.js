@@ -1,14 +1,12 @@
-if (!globalThis.crypto) globalThis.crypto = require('crypto').webcrypto;
-
 import * as baileys from '@whiskeysockets/baileys';
-const { makeWASocket, useMultiFileAuthState } = baileys;
-
 import express from 'express';
+
+const { makeWASocket, useMultiFileAuthState } = baileys;
 
 const app = express();
 app.use(express.json());
 
-const SECRET = 'glowwe-secret'; // Change this to your secure token
+const SECRET = 'glowwe-secret';
 
 const { state, saveCreds } = await useMultiFileAuthState('auth');
 const sock = makeWASocket({ auth: state });
