@@ -1,11 +1,11 @@
-import makeWASocket from '@whiskeysockets/baileys/lib/Socket.js';
-import {
+const makeWASocket = require('@whiskeysockets/baileys').default;
+const {
   useMultiFileAuthState,
   fetchLatestBaileysVersion,
   DisconnectReason
-} from '@whiskeysockets/baileys';
-import { Boom } from '@hapi/boom';
-import qrcode from 'qrcode-terminal';
+} = require('@whiskeysockets/baileys');
+const { Boom } = require('@hapi/boom');
+const qrcode = require('qrcode-terminal');
 
 async function startSock() {
   const { state, saveCreds } = await useMultiFileAuthState('./auth');
