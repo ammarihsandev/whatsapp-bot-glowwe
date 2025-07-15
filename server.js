@@ -38,7 +38,7 @@ sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
     const m = messages[0];
     if (!m.message || m.key.fromMe) return;
     if (m.message.conversation?.toLowerCase() === 'ping') {
-      sock.sendMessage(m.key.remoteJid!, { text: 'pong' });
+      sock.sendMessage(m.key.remoteJid, { text: 'pong' });
     }
   });
 }
