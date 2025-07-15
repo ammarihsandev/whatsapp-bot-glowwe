@@ -1,40 +1,45 @@
-import pkg from '@whiskeysockets/baileys';
-import express from 'express';
+import makeWASocket, {
+  useMultiFileAuthState,
+  fetchLatestBaileysVersion,
+  DisconnectReason
+} from '@whiskeysockets/baileys';
+import { Boom } from '@hapi/boom';
 import qrcode from 'qrcode-terminal';
 
-const { makeWASocket, useSingleFileAuthState } = pkg;
+async function startSock () {
+  // 1️⃣ load/save auth in a *folder* called “auth”
+  const { state, saveCreds } = await useMultiFileAuthState('./auth');
 
-const app = express();
-app.use(express.json());
+  // 2️⃣ always connect with the latest WA‑Web version
+  const { version } = await fetchLatestBaileysVersion();
+  const sock = makeWASocket({
+    version,
+    auth: state,
+    printQRInTerminal: true       // shows QR in Render build logs
+  });
 
-// 🔒 Replace with your own secure token or use Render env variable SECRET
-const SECRET = process.env.SECRET || 'glowwe-secret';
+  // 3️⃣ persist creds whenever they change
+  sock.ev.on('creds.update', saveCreds);
 
-// ----- WhatsApp Web session using single file auth -----
-const { state, saveState } = await useSingleFileAuthState('./auth.json');
-const sock = makeWASocket({ auth: state });
-sock.ev.on('creds.update', saveState);
+  // 4️⃣ auto‑reconnect unless the session is explicitly logged out
+  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
+    if (connection === 'close') {
+      const code = (lastDisconnect?.error as Boom)?.output?.statusCode;
+      if (code !== DisconnectReason.loggedOut) startSock();
+      else console.log('❌ Logged out. Delete auth folder to pair again.');
+    } else if (connection === 'open') {
+      console.log('✅ WhatsApp Web socket is up');
+    }
+  });
 
-// Show QR as a clickable link in Render logs
-sock.ev.on('connection.update', ({ qr }) => {
-  if (qr) {
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`;
-    console.log('📱  Scan this QR to log in →', qrUrl);
-  }
-});
+  // 5️⃣ simple echo demo – reply “pong” to “ping”
+  sock.ev.on('messages.upsert', ({ messages }) => {
+    const m = messages[0];
+    if (!m.message || m.key.fromMe) return;
+    if (m.message.conversation?.toLowerCase() === 'ping') {
+      sock.sendMessage(m.key.remoteJid!, { text: 'pong' });
+    }
+  });
+}
 
-// ----- REST endpoint -----
-app.post('/send', async (req, res) => {
-  const { phone, text, token } = req.body;
-  if (token !== SECRET) return res.status(403).json({ error: 'Invalid token' });
-
-  try {
-    await sock.sendMessage(`${phone}@s.whatsapp.net`, { text });
-    return res.json({ status: 'sent' });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 WhatsApp bot running on port ${PORT}`));
+startSock();
