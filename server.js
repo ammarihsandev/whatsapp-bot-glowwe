@@ -12,9 +12,11 @@ app.use(express.json());
 const SECRET = process.env.SECRET || 'glowwe-secret';
 
 // ----- WhatsApp Web session -----
-const { state, saveCreds } = await useMultiFileAuthState('auth');
+import { useSingleFileAuthState } from '@whiskeysockets/baileys';
+const { state, saveState } = await useSingleFileAuthState('./auth.json');
 const sock = makeWASocket({ auth: state });
-sock.ev.on('creds.update', saveCreds);
+sock.ev.on('creds.update', saveState);
+
 
 // Show QR as a clickable link in Render logs
 sock.ev.on('connection.update', ({ qr }) => {
