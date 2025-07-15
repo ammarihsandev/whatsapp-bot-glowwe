@@ -1,4 +1,3 @@
-// ---------- server.js ----------
 import * as baileys from '@whiskeysockets/baileys';
 import express from 'express';
 import qrcode from 'qrcode-terminal';
