@@ -1,4 +1,6 @@
-import makeWASocket, { useMultiFileAuthState } from '@whiskeysockets/baileys';
+import * as baileys from '@whiskeysockets/baileys';
+const { makeWASocket, useMultiFileAuthState } = baileys;
+
 import express from 'express';
 
 const app = express();
