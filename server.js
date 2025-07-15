@@ -1,12 +1,17 @@
-import * as baileys from '@whiskeysockets/baileys';
+import makeWASocket from '@whiskeysockets/baileys/lib/Socket.js';
+import {
+  useMultiFileAuthState,
+  fetchLatestBaileysVersion,
+  DisconnectReason
+} from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
 import qrcode from 'qrcode-terminal';
 
 async function startSock() {
-  const { state, saveCreds } = await baileys.useMultiFileAuthState('./auth');
-  const { version } = await baileys.fetchLatestBaileysVersion();
+  const { state, saveCreds } = await useMultiFileAuthState('./auth');
+  const { version } = await fetchLatestBaileysVersion();
 
-  const sock = baileys.default({
+  const sock = makeWASocket({
     version,
     auth: state,
     printQRInTerminal: true
@@ -17,11 +22,11 @@ async function startSock() {
   sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
     if (connection === 'close') {
       const code = lastDisconnect?.error?.output?.statusCode;
-      if (code !== baileys.DisconnectReason.loggedOut) {
-        console.log('🌀 Reconnecting...');
+      if (code !== DisconnectReason.loggedOut) {
+        console.log('🔁 Reconnecting...');
         startSock();
       } else {
-        console.log('❌ Logged out. Delete auth folder to re-pair.');
+        console.log('❌ Logged out. Delete auth folder to re-auth.');
       }
     } else if (connection === 'open') {
       console.log('✅ Connected to WhatsApp');
