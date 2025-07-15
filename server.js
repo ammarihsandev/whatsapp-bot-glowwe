@@ -2,7 +2,6 @@ import * as baileys from '@whiskeysockets/baileys';
 import express from 'express';
 
 const { makeWASocket, useMultiFileAuthState } = baileys;
-
 const app = express();
 app.use(express.json());
 
