@@ -17,7 +17,8 @@ const fs = require('fs');
 const express = require('express');
 
 const AUTH_PATH = '/opt/render/project/src/auth';        // persistent disk
-const PORT      = process.env.PORT || 3000;              // Render expects this
+const PORT = process.env.PORT;
+            // Render expects this
 
 /*****************************************************************
  * Express server – serves qr.png and a simple home page
