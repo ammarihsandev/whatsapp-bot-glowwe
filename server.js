@@ -2,8 +2,9 @@
 import * as baileys from '@whiskeysockets/baileys';
 import express from 'express';
 import qrcode from 'qrcode-terminal';
+import fs from 'fs';
 
-const { makeWASocket, useMultiFileAuthState } = baileys;
+const { makeWASocket, useSingleFileAuthState } = baileys;
 
 const app = express();
 app.use(express.json());
@@ -11,12 +12,10 @@ app.use(express.json());
 // 🔒 Replace with your own secure token or use Render env variable SECRET
 const SECRET = process.env.SECRET || 'glowwe-secret';
 
-// ----- WhatsApp Web session -----
-import { useSingleFileAuthState } from '@whiskeysockets/baileys';
+// ----- WhatsApp Web session using single file auth -----
 const { state, saveState } = await useSingleFileAuthState('./auth.json');
 const sock = makeWASocket({ auth: state });
 sock.ev.on('creds.update', saveState);
-
 
 // Show QR as a clickable link in Render logs
 sock.ev.on('connection.update', ({ qr }) => {
