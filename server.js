@@ -7,10 +7,16 @@ const { makeWASocket, useMultiFileAuthState } = baileys;
 const app = express();
 app.use(express.json());
 
-const SECRET = process.env.SECRET || 'glowwe-secret';
+// 🔒 SECURE TOKEN — must be provided in Render env, not in code
+const SECRET = process.env.SECRET;
+if (!SECRET) {
+  console.error('❌ FATAL: SECRET environment variable is not set');
+  process.exit(1);
+}
+
 const PORT = process.env.PORT;
 
-// WhatsApp session with persistent multi-file auth
+// WhatsApp session with persistent multi‑file auth
 const { state, saveCreds } = await useMultiFileAuthState('./auth');
 
 let sock;
@@ -43,7 +49,7 @@ await startSocket();
 app.post('/send', async (req, res) => {
   const { phone, text, token } = req.body;
   if (token !== SECRET) return res.status(403).json({ error: 'Invalid token' });
-  if (!isReady) return res.status(503).json({ error: 'WhatsApp not connected yet' });
+  if (!isReady)   return res.status(503).json({ error: 'WhatsApp not connected yet' });
 
   try {
     await sock.sendMessage(`${phone}@s.whatsapp.net`, { text });
