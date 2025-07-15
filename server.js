@@ -1,6 +1,4 @@
-import { webcrypto } from 'crypto';
-globalThis.crypto = webcrypto;
-
+// ---------- server.js ----------
 import * as baileys from '@whiskeysockets/baileys';
 import express from 'express';
 import qrcode from 'qrcode-terminal';
