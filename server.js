@@ -1,9 +1,6 @@
-import * as baileys from '@whiskeysockets/baileys';
+import makeWASocket, { useSingleFileAuthState } from '@whiskeysockets/baileys';
 import express from 'express';
 import qrcode from 'qrcode-terminal';
-import fs from 'fs';
-
-const { makeWASocket, useSingleFileAuthState } = baileys;
 
 const app = express();
 app.use(express.json());
