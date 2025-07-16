@@ -45,16 +45,23 @@ async function startSocket() {
 
 await startSocket();
 
-// POST /send route to send WhatsApp message
+// POST /send route to send WhatsApp message with 10‑second timeout safeguard
 app.post('/send', async (req, res) => {
   const { phone, text, token } = req.body;
   if (token !== SECRET) return res.status(403).json({ error: 'Invalid token' });
   if (!isReady)   return res.status(503).json({ error: 'WhatsApp not connected yet' });
 
   try {
-    await sock.sendMessage(`${phone}@s.whatsapp.net`, { text });
+    console.log(`📤 Sending message to ${phone}`);
+
+    await Promise.race([
+      sock.sendMessage(`${phone}@s.whatsapp.net`, { text }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timed Out')), 10000))
+    ]);
+
     return res.json({ status: 'sent' });
   } catch (err) {
+    console.error('❌ Send error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 });
