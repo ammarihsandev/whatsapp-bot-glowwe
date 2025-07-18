@@ -12,8 +12,6 @@ const SECRET = 'process.env.SECRET'; // 🔒 Same as used in Google Apps Script
 let sockGlobal = null;
 
 
-const fs = require('fs');
-
 // Rebuild token.json from env
 if (process.env.SECRET_AT && process.env.SECRET_RT) {
   const tokenData = {
