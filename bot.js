@@ -15,7 +15,7 @@ let sockGlobal = null;
 const fs = require('fs');
 
 // Rebuild token.json from env
-if (process.env.GOOGLE_ACCESS_TOKEN && process.env.GOOGLE_REFRESH_TOKEN) {
+if (process.env.SECRET_AT && process.env.SECRET_RT) {
   const tokenData = {
     access_token: process.env.SECRET_AT,
     refresh_token: process.env.SECRET_RT,
@@ -26,6 +26,21 @@ if (process.env.GOOGLE_ACCESS_TOKEN && process.env.GOOGLE_REFRESH_TOKEN) {
   fs.writeFileSync('token.json', JSON.stringify(tokenData));
 }
 
+
+if (process.env.SECRET_CLIENTID && process.env.GOOGLE_CLIENT_SECRET) {
+  const credentials = {
+    installed: {
+      client_id: process.env.SECRET2,
+      project_id: "glowwe-whatsapp-bot",
+      auth_uri: "https://accounts.google.com/o/oauth2/auth",
+      token_uri: "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+      client_secret: process.env.SECRET2,
+      redirect_uris: ["http://localhost"]
+    }
+  };
+  fs.writeFileSync('credentials.json', JSON.stringify(credentials));
+}
 
 
 
