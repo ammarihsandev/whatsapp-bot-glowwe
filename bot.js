@@ -9,8 +9,13 @@ const express = require('express');
 const sessionPath = './auth_info/creds.json';
 const SECRET = 'process.env.SECRET'; // 🔒 Same as used in Google Apps Script
 
+const sessionPath = './auth_info/creds.json';
 let sockGlobal = null;
 
+// === Pastikan folder auth_info ada ===
+if (!fs.existsSync('./auth_info')) {
+  fs.mkdirSync('./auth_info');
+}
 
 // Rebuild token.json from env
 if (process.env.SECRET_AT && process.env.SECRET_RT) {
