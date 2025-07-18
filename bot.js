@@ -7,7 +7,7 @@ const { authorize, uploadSession, downloadSession } = require('./drive');
 const express = require('express');
 
 const sessionPath = './auth_info/creds.json';
-const SECRET = 'process.env.SECRET'; // 🔒 Same as used in Google Apps Script
+const SECRET = process.env.SECRET; // 🔒 Same as used in Google Apps Script
 
 let sockGlobal = null;
 
