@@ -32,7 +32,7 @@ if (process.env.SECRET_AT && process.env.SECRET_RT) {
 if (process.env.SECRET_CLIENTID && process.env.GOOGLE_CLIENT_SECRET) {
   const credentials = {
     installed: {
-      client_id: process.env.SECRET2,
+      client_id: process.env.SECRET_CLIENTID,
       project_id: "glowwe-whatsapp-bot",
       auth_uri: "https://accounts.google.com/o/oauth2/auth",
       token_uri: "https://oauth2.googleapis.com/token",
@@ -89,25 +89,30 @@ startBot().then(() => {
   const app = express();
   app.use(express.json());
 
-  app.post('/send', async (req, res) => {
-    const { phone, text, token } = req.body;
+app.post('/send', async (req, res) => {
+  const { phone, text, token } = req.body;
 
-    if (token !== SECRET) {
-      return res.status(403).send('❌ Forbidden: Invalid token');
-    }
+  if (token !== SECRET) {
+    return res.status(403).send('❌ Forbidden: Invalid token');
+  }
 
-    if (!phone || !text) {
-      return res.status(400).send('❌ Missing phone or text');
-    }
+  if (!phone || !text) {
+    return res.status(400).send('❌ Missing phone or text');
+  }
 
-    try {
-      await sockGlobal.sendMessage(`${phone}@s.whatsapp.net`, { text });
-      res.send('✅ Message sent');
-    } catch (e) {
-      console.error('❌ Send failed:', e);
-      res.status(500).send('❌ Send failed');
-    }
-  });
+  if (!sockGlobal) {
+    return res.status(503).send('❌ Bot not connected to WhatsApp');
+  }
+
+  try {
+    await sockGlobal.sendMessage(`${phone}@s.whatsapp.net`, { text });
+    res.send('✅ Message sent');
+  } catch (e) {
+    console.error('❌ Send failed:', e);
+    res.status(500).send('❌ Send failed');
+  }
+});
+
 
   app.listen(3000, () => {
     console.log('🌐 Express server running at http://localhost:3000');
