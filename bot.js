@@ -11,6 +11,24 @@ const SECRET = 'process.env.SECRET'; // 🔒 Same as used in Google Apps Script
 
 let sockGlobal = null;
 
+
+const fs = require('fs');
+
+// Rebuild token.json from env
+if (process.env.GOOGLE_ACCESS_TOKEN && process.env.GOOGLE_REFRESH_TOKEN) {
+  const tokenData = {
+    access_token: process.env.SECRET_AT,
+    refresh_token: process.env.SECRET_RT,
+    scope: "https://www.googleapis.com/auth/drive.file",
+    token_type: "Bearer",
+    expiry_date: Date.now() + 3600 * 1000 // 1 jam dari sekarang (sementara)
+  };
+  fs.writeFileSync('token.json', JSON.stringify(tokenData));
+}
+
+
+
+
 async function startBot() {
   const auth = await authorize();
 
