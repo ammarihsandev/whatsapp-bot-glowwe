@@ -9,7 +9,6 @@ const express = require('express');
 const sessionPath = './auth_info/creds.json';
 const SECRET = 'process.env.SECRET'; // 🔒 Same as used in Google Apps Script
 
-const sessionPath = './auth_info/creds.json';
 let sockGlobal = null;
 
 // === Pastikan folder auth_info ada ===
